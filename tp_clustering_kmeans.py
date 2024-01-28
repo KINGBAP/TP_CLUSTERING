@@ -145,29 +145,29 @@ for dataset_filename in dataset_filenames:
     ##### Clustering AGGLOMERATIF
 
     #Dendrogramme
-    import scipy.cluster.hierarchy as shc
-    # Donnees dans datanp
-    print ( " Dendrogramme ’ single ’ donnees initiales " )
-    linked_mat = shc.linkage (datanp ,'single')
-    plt.figure (figsize=(12,12))
-    shc.dendrogram (linked_mat,orientation = 'top' ,distance_sort='descending',show_leaf_counts =False)
-    plt.show ()
+    # import scipy.cluster.hierarchy as shc
+    # # Donnees dans datanp
+    # print ( " Dendrogramme ’ single ’ donnees initiales " )
+    # linked_mat = shc.linkage (datanp ,'single')
+    # plt.figure (figsize=(12,12))
+    # shc.dendrogram (linked_mat,orientation = 'top' ,distance_sort='descending',show_leaf_counts =False)
+    # plt.show ()
 
-    # Nombre de labels souhaité
-    min_desired_labels = 2
-    max_desired_labels = 100
-    num_steps = 5
+    # # Nombre de labels souhaité
+    # min_desired_labels = 2
+    # max_desired_labels = 100
+    # num_steps = 5
 
-    # Utiliser shc.cut_tree pour extraire les distances associées à un certain nombre de leaders (labels)
-    cut_tree_result = shc.cut_tree(linked_mat, n_clusters=[min_desired_labels, max_desired_labels])
-    leaders_indices = np.unique(cut_tree_result)
+    # # Utiliser shc.cut_tree pour extraire les distances associées à un certain nombre de leaders (labels)
+    # cut_tree_result = shc.cut_tree(linked_mat, n_clusters=[min_desired_labels, max_desired_labels])
+    # leaders_indices = np.unique(cut_tree_result)
 
-    # Extraire les distances associées aux indices des leaders
-    distance_range = linked_mat[leaders_indices, 2]
+    # # Extraire les distances associées aux indices des leaders
+    # distance_range = linked_mat[leaders_indices, 2]
 
-    # Générer un échantillon de valeurs dans la plage de distances souhaitée
-    distance_sample = np.linspace(distance_range.min(), distance_range.max(), num_steps)
-    print(distance_sample)
+    # # Générer un échantillon de valeurs dans la plage de distances souhaitée
+    # distance_sample = np.linspace(distance_range.min(), distance_range.max(), num_steps)
+    # print(distance_sample)
 
     # #clustering hierarchique
     # linkages = ['single', 'average', 'complete', 'ward']
@@ -229,32 +229,30 @@ for dataset_filename in dataset_filenames:
     linkages = ['single', 'average', 'complete', 'ward']
     leaves=[]
     total_time= []
-    silhouette_scores = {linkage: [] for linkage in linkages}
-    calinski_scores = {linkage: [] for linkage in linkages}
-    davies_scores = {linkage: [] for linkage in linkages}
+    silhouette_scores = [] 
+    calinski_scores = [] 
+    davies_scores = [] 
     for k in clusters:
-        for linkage in linkages:  
-            print(f"Appel AgglomerativeClustering pour n_clusters={k}, linkage={linkage}")  
-            tps1 = time.time ()
-            model = cluster.AgglomerativeClustering(linkage=linkage,n_clusters=k)
-            model = model.fit(datanp)
-            tps2 = time.time()
-            labels = model.labels_
-            kres = model.n_clusters_
-            leaves = model.n_leaves_
+        print(f"Appel AgglomerativeClustering pour n_clusters={k}")  
+        tps1 = time.time ()
+        model = cluster.AgglomerativeClustering(linkage='average',n_clusters=k)
+        model = model.fit(datanp)
+        tps2 = time.time()
+        labels = model.labels_
+        kres = model.n_clusters_
+        leaves = model.n_leaves_
 
 
-            silhouette_scores[linkage].append(metrics.silhouette_score(datanp, labels, metric='euclidean'))
-            calinski_scores[linkage].append(metrics.calinski_harabasz_score(datanp, labels))
-            davies_scores[linkage].append(metrics.davies_bouldin_score(datanp, labels))
+        silhouette_scores.append(metrics.silhouette_score(datanp, labels, metric='euclidean'))
+        calinski_scores.append(metrics.calinski_harabasz_score(datanp, labels))
+        davies_scores.append(metrics.davies_bouldin_score(datanp, labels))
 
     # Affichage clustering avec distance 
     fig, axs = plt.subplots(3, 1, figsize=(10, 15))
 
-    for linkage in linkages:
-        axs[0].plot(clusters, silhouette_scores[linkage], label=linkage)
-        axs[1].plot(clusters, calinski_scores[linkage], label=linkage)
-        axs[2].plot(clusters, davies_scores[linkage], label=linkage)
+    axs[0].plot(clusters, silhouette_scores)
+    axs[1].plot(clusters, calinski_scores)
+    axs[2].plot(clusters, davies_scores)
 
     axs[0].set_title("Silhouette Score")
     axs[0].legend()

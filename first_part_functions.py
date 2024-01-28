@@ -214,13 +214,6 @@ def agglo_clustering_clusters(filename):
     plt.tight_layout(rect=[0, 0, 1, 0.97])
     plt.show()
 
-    # Affichage du meilleur score et le nombre de clusters associé pour chaque métrique
-    for linkage in linkages:
-        print(f"Meilleur Silhouette Score pour {linkage}: {best_silhouette[linkage]} avec k={best_k_silhouette[linkage]} clusters")
-        print(f"Meilleur Calinski Score pour {linkage}: {best_calinski[linkage]} avec k={best_k_calinski[linkage]} clusters")
-        print(f"Meilleur Davies Score pour {linkage}: {best_davies[linkage]} avec k={best_k_davies[linkage]} clusters")
-
-    print("nb clusters =", k, ", nb feuilles =", leaves, " runtime =", round((tps2 - tps1) * 1000, 2), " ms")
 
     fig, axs = plt.subplots(4, 3, figsize=(15, 15))
 
@@ -242,11 +235,8 @@ def agglo_clustering_distance(filename):
     min_dist, max_dist = dendrogramme(datanp)
     distance_sample = np.linspace(min_dist, max_dist, 30)
 
-
-    # clustering hierarchique
     linkages = ['single', 'average', 'complete', 'ward']
     
-    # Dictionnaires pour stocker les résultats spécifiques à chaque linkage
     total_time = {linkage: [] for linkage in linkages}
     silhouette_scores = {linkage: [] for linkage in linkages}
     calinski_scores = {linkage: [] for linkage in linkages}
@@ -255,9 +245,7 @@ def agglo_clustering_distance(filename):
     # Affichage clustering avec distance
     fig, axs = plt.subplots(4, 1, figsize=(10, 15))
 
-    # Inversion des boucles pour distance et linkage
     for linkage in linkages:
-        # Liste pour stocker les distances filtrées spécifiques à chaque linkage
         distance_sample_filtered_linkage = []
         for distance in distance_sample:
             print(f"Appel AgglomerativeClustering pour distance={distance}, linkage={linkage}")
@@ -327,37 +315,18 @@ path = './clustering-benchmark/src/main/resources/datasets/artificial/'
 files1 = os.listdir(path)
 first_part = [f for f in files1 if os.path.isfile(os.path.join(path, f))]
 
-dataset_filenames = ["curves1.arff","circle.arff","elliptical_10_2.arff","R15.arff","cuboids.arff","dartboard1.arff","zelnik1.arff", "cluto-t5-8k.arff", "donut3.arff", "s-set1.arff","donutcurves.arff"]
-
+dataset_filenames1 = ["curves1.arff","cassini.arff","elliptical_10_2.arff","R15.arff","cuboids.arff","dartboard1.arff","zelnik1.arff", "cluto-t5-8k.arff", "donut3.arff", "s-set1.arff","donutcurves.arff"]
+dataset_filenames2 = ["x1.txt","x2.txt","x3.txt","x4.txt","zz1.txt","zz2.txt","y1.txt"]
 path = './dataset-rapport/'
 files2 = os.listdir(path)
 second_part = [f for f in files2 if os.path.isfile(os.path.join(path, f))]
 
-for f in dataset_filenames:
-    all_clustering(f)
-#for f in second_part:
-#    all_clustering(f)
+# for f in dataset_filenames1:
+#     all_clustering(f)
+for f in dataset_filenames2:
+   all_clustering(f)
+
+
 #all_clustering("xclara.arff")
 #all_clustering("x1.txt")
 #all_clustering("x2.doc")
-
-
-#disk-4500n.arff ne marche pas avec Kmeans ni agglomeratif, essaie de diviser en clusters de même taille
-#curves1.arff marche bien avec Kmeans (silhouette et Davies) et agglomeratif clusters
-#elliptical_10_2.arff marche bien avec Kmeans (silhouette et Calinski) et agglomeratif clusters (average complete et ward marchent mieux que single)
-#R15.arff marche pas trop mal avec Kmeans (15 ou 8 clusters)
-#cuboids ne marche pas avec Kmeans mais avec agglomeratif clusters et single pas mal (2) sinon no
-#2d-4c.arff marche bien avec Kmeans (Silhouette et Davies)  et agglomeratif car vraiment distincts
-#simplex marche bien sauf avec agglomeratif clusters et single bizarre il trouve 8
-#dartboard nul nul nul
-#zelnik pas mal avvec kmeans (davies) pareil avec agglomeratif clusters (complete et ward avec davies)
-#zelnik1 nul nul nul
-#chainlink nul
-#cure-t0-2000n-2D.arff nul à part avec agglomeratif clusters et single
-#hepta marche bien
-#cluto-t5-8k wow niquel avec kmeans et calinski et pareil calinski avec agglomeratif clusters
-#donut3 bien avec single encore 
-#donutcurves sépare bien les deux clusters mais pas interne à chqaque séparation
-#curves2 nul
-#zelnik5 nul
-#s-set1 bien avec kmeans
